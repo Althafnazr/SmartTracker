@@ -44,10 +44,10 @@ SmartTracker/
 │   │   │   ├── dashboard.html
 │   │   │   ├── product_list.html
 │   │   │   ├── product_form.html
-│   │   │   ├── product_confirm_delete.html
+│   │   │   ├── product_delete.html
 │   │   │   ├── service_request_list.html
 │   │   │   ├── service_request_form.html
-│   │   │   └── service_request_confirm_delete.html
+│   │   │   └── service_delete.html
 │   │   └── registration/
 │   │       └── login.html
 │   ├── models.py
