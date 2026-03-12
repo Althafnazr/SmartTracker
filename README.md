@@ -39,9 +39,10 @@ SmartTracker/
 ├── inventory/
 │   ├── migrations/
 │   ├── templates/
+│   │   │    ├── dashboard.html
+│   │   │    └──403.html
 │   │   ├── inventory/
-│   │   │   ├── base.html
-│   │   │   ├── dashboard.html
+│   │   │   ├── base.html 
 │   │   │   ├── product_list.html
 │   │   │   ├── product_form.html
 │   │   │   ├── product_delete.html
