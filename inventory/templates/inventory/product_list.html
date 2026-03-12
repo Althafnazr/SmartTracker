@@ -1,0 +1,308 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #4f8ef7;
+    --accent2: #34d399;
+    --accent3: #f59e0b;
+    --accent4: #f87171;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --radius: 14px;
+  }
+
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+  }
+
+  .page-wrapper {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 24px;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .page-header h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--accent);
+    color: #fff !important;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 9px 20px;
+    border-radius: 9px;
+    text-decoration: none !important;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+
+  .btn-add:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+  }
+
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow-x: auto;
+  }
+
+  .table-card table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+
+  .table-card thead th {
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  .table-card tbody td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+  }
+
+  .table-card tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .table-card tbody tr {
+    transition: background 0.15s;
+  }
+
+  .table-card tbody tr:hover td {
+    background: var(--surface2);
+  }
+
+  /* Mono font for numbers */
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+  }
+
+  /* Stock badge */
+  .stock-ok {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(52,211,153,0.1);
+    border: 1px solid rgba(52,211,153,0.25);
+    color: var(--accent2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .stock-low {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(248,113,113,0.1);
+    border: 1px solid rgba(248,113,113,0.3);
+    color: var(--accent4);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  /* Category pill */
+  .category-pill {
+    display: inline-block;
+    background: rgba(79,142,247,0.1);
+    border: 1px solid rgba(79,142,247,0.2);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  /* Profit value */
+  .profit-val {
+    color: var(--accent2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  /* Action buttons */
+  .table-card th:last-child,
+  .table-card td:last-child {
+    min-width: 130px;
+    width: 130px;
+  }
+
+  .action-btns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .btn-edit {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent) !important;
+    background: rgba(79,142,247,0.08);
+    border: 1px solid rgba(79,142,247,0.2);
+    padding: 4px 12px;
+    border-radius: 7px;
+    text-decoration: none !important;
+    transition: all 0.2s;
+  }
+
+  .btn-edit:hover {
+    background: rgba(79,142,247,0.18);
+    border-color: var(--accent);
+  }
+
+  .btn-delete {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent4) !important;
+    background: rgba(248,113,113,0.08);
+    border: 1px solid rgba(248,113,113,0.2);
+    padding: 4px 12px;
+    border-radius: 7px;
+    text-decoration: none !important;
+    transition: all 0.2s;
+  }
+
+  .btn-delete:hover {
+    background: rgba(248,113,113,0.18);
+    border-color: var(--accent4);
+  }
+
+  /* Empty state */
+  .empty-state {
+    padding: 52px;
+    text-align: center;
+    color: var(--muted);
+  }
+
+  .empty-state .empty-icon {
+    font-size: 2.4rem;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .empty-state p {
+    margin: 0 0 16px;
+    font-size: 0.92rem;
+  }
+</style>
+
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <h2>📦 Product Inventory</h2>
+    <a href="{% url 'add_product' %}" class="btn-add">➕ Add New Product</a>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Brand</th>
+          <th>Model</th>
+          <th>Part Name</th>
+          <th>Purchase Price</th>
+          <th>Selling Price</th>
+          <th>Stock</th>
+          <th>Total Profit</th>
+          <th>Warranty</th>
+          <th>Date Added</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+        <tr>
+          <td><span class="category-pill">{{ product.category }}</span></td>
+          <td><strong>{{ product.brand }}</strong></td>
+          <td class="mono">{{ product.model_name }}</td>
+          <td>{{ product.part_name }}</td>
+          <td class="mono">₹{{ product.purchase_price }}</td>
+          <td class="mono">₹{{ product.selling_price }}</td>
+          <td>
+            {% if product.stock_quantity <= 2 %}
+              <span class="stock-low">⚠ {{ product.stock_quantity }}</span>
+            {% else %}
+              <span class="stock-ok">✓ {{ product.stock_quantity }}</span>
+            {% endif %}
+          </td>
+          <td><span class="profit-val">₹{{ product.total_profit }}</span></td>
+          <td class="mono">{{ product.warranty_months }}m</td>
+          <td class="mono">{{ product.date_added }}</td>
+          <td>
+            <div class="action-btns">
+              <a href="{% url 'update_product' product.id %}" class="btn-edit">✏ Edit</a>
+              <a href="{% url 'delete_product' product.id %}" class="btn-delete">🗑 Delete</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="11">
+            <div class="empty-state">
+              <span class="empty-icon">📭</span>
+              <p>No products in inventory yet.</p>
+              <a href="{% url 'add_product' %}" class="btn-add">➕ Add Your First Product</a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{% endblock %}

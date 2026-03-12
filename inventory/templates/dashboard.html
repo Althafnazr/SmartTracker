@@ -1,0 +1,399 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #4f8ef7;
+    --accent2: #34d399;
+    --accent3: #f59e0b;
+    --accent4: #f87171;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --radius: 14px;
+  }
+
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+  }
+
+  /* Override base.html navbar area */
+  body > h1 {
+    background: var(--surface);
+    color: var(--accent) !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-weight: 700;
+    font-size: 1.1rem !important;
+    letter-spacing: 0.04em;
+    padding: 14px 28px !important;
+    margin: 0 !important;
+    border-bottom: 1px solid var(--border);
+  }
+
+  body > hr { display: none !important; }
+
+  body > a {
+    color: var(--muted) !important;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    background: var(--surface);
+  }
+  body > a:hover { color: var(--accent) !important; background: var(--surface2); }
+  body > form button {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  body > form button:hover { border-color: var(--accent4); color: var(--accent4); }
+
+  .dash-wrapper {
+    max-width: 1100px;
+    margin: 36px auto;
+    padding: 0 24px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .dash-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+  }
+
+  .dash-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .dash-header .badge-live {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--accent2);
+    background: rgba(52,211,153,0.1);
+    border: 1px solid rgba(52,211,153,0.25);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+  }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent2);
+    animation: pulse 1.8s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  /* Stat cards grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 22px 18px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .stat-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .stat-card.blue::before   { background: var(--accent); }
+  .stat-card.green::before  { background: var(--accent2); }
+  .stat-card.amber::before  { background: var(--accent3); }
+  .stat-card.red::before    { background: var(--accent4); }
+
+  .stat-icon {
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.65rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .stat-value.blue  { color: var(--accent); }
+  .stat-value.green { color: var(--accent2); }
+  .stat-value.amber { color: var(--accent3); }
+
+  /* Section header */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 32px 0 16px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .section-header::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Services row */
+  .services-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .svc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    animation: fadeUp 0.5s ease both;
+    transition: transform 0.2s;
+  }
+  .svc-card:hover { transform: translateY(-2px); }
+
+  .svc-icon-wrap {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .svc-icon-wrap.total   { background: rgba(79,142,247,0.12); }
+  .svc-icon-wrap.done    { background: rgba(52,211,153,0.12); }
+  .svc-icon-wrap.pending { background: rgba(245,158,11,0.12); }
+
+  .svc-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+
+  .svc-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .svc-num.blue   { color: var(--accent); }
+  .svc-num.green  { color: var(--accent2); }
+  .svc-num.amber  { color: var(--accent3); }
+
+  /* Low stock table */
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .table-card table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+  }
+
+  .table-card thead th {
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .table-card tbody td {
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+
+  .table-card tbody tr:last-child td { border-bottom: none; }
+  .table-card tbody tr:hover td { background: var(--surface2); }
+
+  .stock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(248,113,113,0.12);
+    border: 1px solid rgba(248,113,113,0.3);
+    color: var(--accent4);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .empty-state {
+    padding: 36px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .empty-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+</style>
+
+<div class="dash-wrapper">
+
+  <!-- Header -->
+  <div class="dash-header">
+    <h1>Dashboard</h1>
+    <span class="badge-live"><span class="dot"></span> Live Data</span>
+  </div>
+
+  <!-- Revenue & Profit -->
+  <div class="section-header">💰 Financials</div>
+  <div class="stats-grid">
+    <div class="stat-card blue" style="animation-delay:0.05s">
+      <span class="stat-icon">📈</span>
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-value blue">₹{{ total_revenue }}</div>
+    </div>
+    <div class="stat-card green" style="animation-delay:0.1s">
+      <span class="stat-icon">💹</span>
+      <div class="stat-label">Total Profit</div>
+      <div class="stat-value green">₹{{ total_profit }}</div>
+    </div>
+    <div class="stat-card amber" style="animation-delay:0.15s">
+      <span class="stat-icon">📦</span>
+      <div class="stat-label">Total Products</div>
+      <div class="stat-value amber">{{ total_products }}</div>
+    </div>
+  </div>
+
+  <!-- Service Stats -->
+  <div class="section-header">🔧 Service Requests</div>
+  <div class="services-row">
+    <div class="svc-card" style="animation-delay:0.2s">
+      <div class="svc-icon-wrap total">🗂️</div>
+      <div>
+        <div class="svc-label">Total</div>
+        <div class="svc-num blue">{{ total_services }}</div>
+      </div>
+    </div>
+    <div class="svc-card" style="animation-delay:0.25s">
+      <div class="svc-icon-wrap done">✅</div>
+      <div>
+        <div class="svc-label">Completed</div>
+        <div class="svc-num green">{{ completed_count }}</div>
+      </div>
+    </div>
+    <div class="svc-card" style="animation-delay:0.3s">
+      <div class="svc-icon-wrap pending">⏳</div>
+      <div>
+        <div class="svc-label">Pending</div>
+        <div class="svc-num amber">{{ pending_services }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Low Stock Alert -->
+  <div class="section-header">⚠️ Low Stock Alert </div>
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Stock Remaining</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in low_stock %}
+        <tr>
+          <td>{{ product }}</td>
+          <td><span class="stock-badge">⚠ {{ product.stock_quantity }} left</span></td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="2">
+            <div class="empty-state">
+              <span class="empty-icon">✅</span>
+              All products are well stocked
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{% endblock %}
