@@ -1,0 +1,217 @@
+{% extends 'inventory/base.html' %}
+
+{% block content %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #4f8ef7;
+    --accent4: #f87171;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --radius: 14px;
+  }
+
+  body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+    font-family: 'Space Grotesk', sans-serif !important;
+  }
+
+  .confirm-wrapper {
+    max-width: 460px;
+    margin: 100px auto;
+    padding: 0 24px;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .confirm-card {
+    background: var(--surface);
+    border: 1px solid rgba(248,113,113,0.25);
+    border-radius: 18px;
+    padding: 40px 36px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(248,113,113,0.06);
+  }
+
+  .confirm-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 16px;
+    animation: shake 0.5s ease 0.2s both;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: rotate(0deg); }
+    20%       { transform: rotate(-12deg); }
+    40%       { transform: rotate(12deg); }
+    60%       { transform: rotate(-6deg); }
+    80%       { transform: rotate(6deg); }
+  }
+
+  .confirm-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+  }
+
+  .confirm-card p {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .detail-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 12px 0 20px;
+    text-align: left;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 0.82rem;
+  }
+
+  .detail-row:not(:last-child) {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  }
+
+  .detail-label {
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .detail-value {
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+  }
+
+  .warning-note {
+    background: rgba(248,113,113,0.06);
+    border: 1px solid rgba(248,113,113,0.15);
+    border-radius: 9px;
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    color: var(--accent4);
+    margin-bottom: 24px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .btn-confirm {
+    background: var(--accent4);
+    border: none;
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 10px 26px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+
+  .btn-confirm:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+  }
+
+  .btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    color: var(--muted) !important;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    text-decoration: none !important;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel:hover {
+    color: var(--text) !important;
+    border-color: var(--muted);
+  }
+</style>
+
+<div class="confirm-wrapper">
+  <div class="confirm-card">
+
+    <span class="confirm-icon">🛠️</span>
+    <h3>Delete Service Request?</h3>
+    <p>You are about to permanently delete this repair job:</p>
+
+    <div class="detail-box">
+      <div class="detail-row">
+        <span class="detail-label">Customer</span>
+        <span class="detail-value">{{ service.customer_name }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Product</span>
+        <span class="detail-value">{{ service.product }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Status</span>
+        <span class="detail-value">{{ service.service_status }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Received</span>
+        <span class="detail-value">{{ service.received_date }}</span>
+      </div>
+    </div>
+
+    <div class="warning-note">
+      ⚠ This action cannot be undone.
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="btn-row">
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-confirm">🗑 Yes, Delete</button>
+      </form>
+      <a href="{% url 'service_request_list' %}" class="btn-cancel">← Cancel</a>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

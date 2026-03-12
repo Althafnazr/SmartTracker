@@ -91,8 +91,11 @@ def update_product(request, id):
 @permission_required('inventory.delete_product', raise_exception=True)
 def delete_product(request, id):
     product = get_object_or_404(Product, id=id)
-    product.delete()
-    return redirect('product_list')
+
+    if request.method == "POST":
+        product.delete()
+        return redirect('product_list')
+    return render(request, 'inventory/product_delete.html', {'product': product})
 
     # SERVICE REQUEST VIEWS
 
@@ -157,6 +160,8 @@ def update_service_request(request, id):
 @permission_required('inventory.delete_servicerequest', raise_exception=True)
 def delete_service_request(request, id):
     service = get_object_or_404(ServiceRequest, id=id)
-    service.delete()
-    return redirect('service_request_list')
 
+    if request.method == "POST":
+        service.delete()
+        return redirect('service_request_list')
+    return render(request, 'inventory/service_delete.html', {'service': service})
